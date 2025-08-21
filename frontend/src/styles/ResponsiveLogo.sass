@@ -1,0 +1,36 @@
+.responsive-logo
+  display: flex
+  justify-content: center
+  align-items: center
+
+  .logo-horizontal,
+  .logo-vertical
+    max-width: 800px
+    width: 100%
+    height: auto
+    opacity: 0
+    animation: fadeInLogo 2s ease-in-out 0.5s forwards
+
+  // Show horizontal logo by default (desktop)
+  .logo-horizontal
+    display: block
+
+  .logo-vertical
+    display: none
+
+// Fade-in animation for logo
+@keyframes fadeInLogo
+  from
+    opacity: 0
+  to
+    opacity: 1
+
+// Mobile breakpoint - show vertical logo and reduce spacing
+@media (max-width: 768px)
+  .responsive-logo
+    .logo-horizontal
+      display: none
+
+    .logo-vertical
+      display: block
+      max-width: 400px

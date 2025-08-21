@@ -1,0 +1,147 @@
+header
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  z-index: 1000
+  background-color: rgba(0, 0, 0, 0.9)
+  backdrop-filter: blur(10px)
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1)
+  height: 60px
+  display: flex
+  align-items: center
+
+  .container
+    max-width: 1200px
+    margin: 0 auto
+    padding: 0 2rem
+    width: 100%
+
+  .header-content
+    display: flex
+    justify-content: center
+    align-items: center
+    position: relative
+    width: 100%
+
+  // Hamburger Menu Button - Hidden on Desktop
+  .hamburger
+    display: none
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    background: none
+    border: none
+    cursor: pointer
+    padding: 0.5rem
+    position: absolute
+    right: 16px
+    z-index: 1001
+    outline: none
+
+    &:hover, &:focus, &:active
+      background: none
+      outline: none
+
+    span
+      display: block
+      width: 25px
+      height: 2px
+      background: #fff
+      margin: 3px 0
+      transition: all 0.3s ease
+      transform-origin: center
+
+    &:hover span, &:focus span, &:active span
+      background: #fff
+
+    &.active
+      span:nth-child(1)
+        transform: rotate(45deg) translate(5px, 5px)
+
+      span:nth-child(2)
+        opacity: 0
+
+      span:nth-child(3)
+        transform: rotate(-45deg) translate(7px, -6px)
+
+  // Navigation Styles
+  .nav
+    display: flex
+    justify-content: center
+    align-items: center
+    gap: 3rem
+    transition: all 0.3s ease
+
+    a
+      color: #fff
+      text-decoration: none
+      font-weight: 300
+      letter-spacing: 0.1em
+      font-size: 0.89rem
+      text-transform: uppercase
+      transition: all 0.3s ease
+      position: relative
+
+      &:hover
+        opacity: 0.7
+
+      &.active
+        &::after
+          content: ''
+          position: absolute
+          bottom: -0.5rem
+          left: 0
+          right: 0
+          height: 1px
+          background: #fff
+
+// Mobile Styles
+@media (max-width: 768px)
+  header
+    .hamburger
+      display: flex
+
+    .nav
+      position: fixed
+      top: 100%
+      left: 0
+      right: 0
+      background-color: rgba(0, 0, 0, 0.95)
+      backdrop-filter: blur(10px)
+      flex-direction: column
+      gap: 1.5rem
+      padding: 2rem
+      transform: translateY(-100%)
+      opacity: 0
+      visibility: hidden
+      transition: all 0.3s ease
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1)
+
+      &.nav-open
+        transform: translateY(0)
+        opacity: 1
+        visibility: visible
+
+      a
+        font-size: 1rem
+        padding: 0.75rem 0
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1)
+        width: 100%
+        text-align: center
+
+        &:last-child
+          border-bottom: none
+
+// Tablet Styles
+@media (max-width: 1024px) and (min-width: 769px)
+  header
+    .nav
+      gap: 2rem
+
+      a
+        font-size: 0.8rem
+
+// Adjust main content to account for fixed header
+main
+  padding-top: 80px

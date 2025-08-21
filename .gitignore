@@ -1,0 +1,83 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Environment variables and secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# API keys and configuration
+emailConfig.ts
+stripeConfig.ts
+config/keys.ts
+config/secrets.ts
+
+# Build and cache
+.next/
+.cache/
+.parcel-cache/
+.vite/
+coverage/
+.nyc_output/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary files
+*.tmp
+*.temp
+.temp/
+temp/
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Package manager files
+.pnpm-debug.log*
+.yarn/install-state.gz
+
+# TypeScript cache
+*.tsbuildinfo
+
+
+CODEBASE_ANALYSIS.md
+SECURITY_ACCESSIBILITY_PLAN.md
+TO-DO.md
+STRIPE_TESTING_INSTRUCTIONS.md
+ORDER_EMAIL_SETUP.md
+STRIPE_QUICK_SETUP.md
+ai_analyze_codebase_functionality.md
+node_modules
