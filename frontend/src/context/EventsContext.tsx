@@ -52,7 +52,6 @@ export const EventsProvider: React.FC<EventsProviderProps> = ({ children }) => {
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [mounted, setMounted] = useState(false);
 
     const clearError = useCallback(() => {
         setError(null);
@@ -205,18 +204,17 @@ export const EventsProvider: React.FC<EventsProviderProps> = ({ children }) => {
         }
     }, []);
 
-    // Handle client-side mounting
+    // Load events on mount (client-side only)
     useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    // Load events on mount
-    useEffect(() => {
-        if (mounted) {
-            console.log('🔄 EventsProvider useEffect triggered - calling fetchEvents');
+        // Only fetch on client-side to avoid SSR issues
+        if (typeof window !== 'undefined') {
+            console.log(
+                '🔄 EventsProvider useEffect triggered - calling fetchEvents'
+            );
+            console.log('🌐 Current window location:', window.location.href);
             fetchEvents();
         }
-    }, [mounted, fetchEvents]);
+    }, [fetchEvents]);
 
     const value: EventsContextType = {
         events,

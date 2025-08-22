@@ -48,7 +48,6 @@ export const VideosProvider: React.FC<VideosProviderProps> = ({ children }) => {
     const [videos, setVideos] = useState<Video[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [mounted, setMounted] = useState(false);
 
     const clearError = useCallback(() => {
         setError(null);
@@ -205,17 +204,16 @@ export const VideosProvider: React.FC<VideosProviderProps> = ({ children }) => {
         }
     }, []);
 
-    // Handle client-side mounting
+    // Load videos on mount (client-side only)
     useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    // Load videos on mount
-    useEffect(() => {
-        if (mounted) {
+        // Only fetch on client-side to avoid SSR issues
+        if (typeof window !== 'undefined') {
+            console.log(
+                '🔄 VideosProvider useEffect triggered - calling fetchVideos'
+            );
             fetchVideos();
         }
-    }, [mounted, fetchVideos]);
+    }, [fetchVideos]);
 
     const value: VideosContextType = {
         videos,

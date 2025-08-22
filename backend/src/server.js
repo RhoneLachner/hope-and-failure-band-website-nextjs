@@ -93,11 +93,18 @@ async function startServer() {
             );
         }
 
-        // SIMPLE: Skip initialization to avoid prepared statement conflicts
-        console.log(
-            '⚠️ Skipping data initialization to avoid database conflicts'
-        );
-        console.log('💡 Assuming data already exists in database');
+        // Initialize data on fresh database
+        console.log('🌱 Initializing database data...');
+        try {
+            await initializeInventory();
+            await initializeEvents();
+            await initializeVideos();
+            await initializeBio();
+            await initializeLyrics();
+            console.log('✅ Database initialization completed');
+        } catch (error) {
+            console.error('❌ Database initialization failed:', error);
+        }
 
         // PRODUCTION: Start server with proper error handling
         const { PORT } = require('./config/environment');

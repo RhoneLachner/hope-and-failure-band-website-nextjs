@@ -1,12 +1,19 @@
 const { PrismaClient } = require('../generated/prisma');
 
-// PRODUCTION-READY: Disable prepared statements + stable connection pooling
+// PRODUCTION-READY: Use direct URL for development, pooled for production
+const getDatabaseUrl = () => {
+    // Use DIRECT_URL for development to avoid prepared statement conflicts
+    // Use DATABASE_URL (pooled) for production
+    if (process.env.NODE_ENV === 'production') {
+        return process.env.DATABASE_URL;
+    }
+    return process.env.DIRECT_URL || process.env.DATABASE_URL;
+};
+
 const prisma = new PrismaClient({
     datasources: {
         db: {
-            url:
-                process.env.DATABASE_URL +
-                '?prepared_statements=false&connection_limit=5&pool_timeout=20',
+            url: getDatabaseUrl(),
         },
     },
     log: process.env.NODE_ENV === 'production' ? ['error'] : ['error', 'warn'],
@@ -16,12 +23,15 @@ const prisma = new PrismaClient({
 // PRODUCTION: Robust connection with health check
 async function connectDatabase() {
     try {
+        // Connect to database
         await prisma.$connect();
 
         // Health check to ensure connection works
         await prisma.$queryRaw`SELECT 1 as health_check`;
 
-        console.log('✅ Database connected (production-ready)');
+        const urlType =
+            process.env.NODE_ENV === 'production' ? 'pooled' : 'direct';
+        console.log(`✅ Database connected (${urlType} connection)`);
         return true;
     } catch (error) {
         console.error('❌ Database connection failed:', error.message);
