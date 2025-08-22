@@ -68,8 +68,12 @@ temp/
 # TypeScript cache
 *.tsbuildinfo
 
-# Documentation files
+# Documentation files and setup scripts (keep local only)
 TO-DO.md
 STRIPE_TESTING_INSTRUCTIONS.md
 ORDER_EMAIL_SETUP.md
 STRIPE_QUICK_SETUP.md
+setup-secure-admin.sh
+
+# Backup directories (keep local only)
+frontend-backup/
