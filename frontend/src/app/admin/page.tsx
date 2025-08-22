@@ -1,12 +1,78 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import AdminInventory from '../../components/admin/AdminInventory';
-import AdminEvents from '../../components/admin/AdminEvents';
-import AdminVideos from '../../components/admin/AdminVideos';
-import AdminBio from '../../components/admin/AdminBio';
-import AdminLyrics from '../../components/admin/AdminLyrics';
+import React, { useState, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { validateAdminPassword, SETUP_INSTRUCTIONS } from '../../config/auth';
+
+// PERFORMANCE: Lazy load admin components with dynamic imports
+// This reduces initial bundle size and loads components only when needed
+const AdminInventory = dynamic(
+    () => import('../../components/admin/AdminInventory'),
+    {
+        loading: () => (
+            <AdminLoadingState>Loading Inventory...</AdminLoadingState>
+        ),
+        ssr: false, // Admin components don't need SSR
+    }
+);
+
+const AdminEvents = dynamic(
+    () => import('../../components/admin/AdminEvents'),
+    {
+        loading: () => <AdminLoadingState>Loading Events...</AdminLoadingState>,
+        ssr: false,
+    }
+);
+
+const AdminVideos = dynamic(
+    () => import('../../components/admin/AdminVideos'),
+    {
+        loading: () => <AdminLoadingState>Loading Videos...</AdminLoadingState>,
+        ssr: false,
+    }
+);
+
+const AdminBio = dynamic(() => import('../../components/admin/AdminBio'), {
+    loading: () => <AdminLoadingState>Loading Bio...</AdminLoadingState>,
+    ssr: false,
+});
+
+const AdminLyrics = dynamic(
+    () => import('../../components/admin/AdminLyrics'),
+    {
+        loading: () => <AdminLoadingState>Loading Lyrics...</AdminLoadingState>,
+        ssr: false,
+    }
+);
+
+// Loading state component for admin sections
+const AdminLoadingState: React.FC<{ children: React.ReactNode }> = ({
+    children,
+}) => (
+    <div
+        style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '200px',
+            color: '#fff',
+            fontSize: '1.1rem',
+            opacity: 0.7,
+        }}
+    >
+        <div style={{ textAlign: 'center' }}>
+            <div
+                style={{
+                    marginBottom: '1rem',
+                    fontSize: '1.5rem',
+                }}
+            >
+                ⏳
+            </div>
+            {children}
+        </div>
+    </div>
+);
 
 export default function AdminPage() {
     const [password, setPassword] = useState('');
@@ -201,46 +267,54 @@ export default function AdminPage() {
                 />
             </div>
 
-            {/* Tab Content - Much cleaner! */}
-            {activeTab === 'inventory' && (
-                <AdminInventory
-                    password={password}
-                    setMessage={setMessage}
-                    message={message}
-                />
-            )}
+            {/* Tab Content - Performance optimized with lazy loading */}
+            <Suspense
+                fallback={
+                    <AdminLoadingState>
+                        Loading admin content...
+                    </AdminLoadingState>
+                }
+            >
+                {activeTab === 'inventory' && (
+                    <AdminInventory
+                        password={password}
+                        setMessage={setMessage}
+                        message={message}
+                    />
+                )}
 
-            {activeTab === 'events' && (
-                <AdminEvents
-                    setMessage={setMessage}
-                    message={message}
-                    loading={loading}
-                />
-            )}
+                {activeTab === 'events' && (
+                    <AdminEvents
+                        setMessage={setMessage}
+                        message={message}
+                        loading={loading}
+                    />
+                )}
 
-            {activeTab === 'videos' && (
-                <AdminVideos
-                    setMessage={setMessage}
-                    message={message}
-                    loading={loading}
-                />
-            )}
+                {activeTab === 'videos' && (
+                    <AdminVideos
+                        setMessage={setMessage}
+                        message={message}
+                        loading={loading}
+                    />
+                )}
 
-            {activeTab === 'bio' && (
-                <AdminBio
-                    setMessage={setMessage}
-                    message={message}
-                    loading={loading}
-                />
-            )}
+                {activeTab === 'bio' && (
+                    <AdminBio
+                        setMessage={setMessage}
+                        message={message}
+                        loading={loading}
+                    />
+                )}
 
-            {activeTab === 'lyrics' && (
-                <AdminLyrics
-                    setMessage={setMessage}
-                    message={message}
-                    loading={loading}
-                />
-            )}
+                {activeTab === 'lyrics' && (
+                    <AdminLyrics
+                        setMessage={setMessage}
+                        message={message}
+                        loading={loading}
+                    />
+                )}
+            </Suspense>
 
             <div style={{ textAlign: 'center', marginTop: '2rem' }}>
                 <button

@@ -68,11 +68,8 @@ temp/
 # TypeScript cache
 *.tsbuildinfo
 
-# Documentation files (optional - uncomment if you want to hide them)
-# CODEBASE_ANALYSIS.md
-# SECURITY_ACCESSIBILITY_PLAN.md
-# TO-DO.md
-# STRIPE_TESTING_INSTRUCTIONS.md
-# ORDER_EMAIL_SETUP.md
-# STRIPE_QUICK_SETUP.md
-# ai_analyze_codebase_functionality.md
+# Documentation files
+TO-DO.md
+STRIPE_TESTING_INSTRUCTIONS.md
+ORDER_EMAIL_SETUP.md
+STRIPE_QUICK_SETUP.md

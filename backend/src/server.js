@@ -12,6 +12,7 @@ const videosRoutes = require('./routes/videos');
 const bioRoutes = require('./routes/bio');
 const lyricsRoutes = require('./routes/lyrics');
 const stripeRoutes = require('./routes/stripe');
+const performanceRoutes = require('./routes/performance');
 
 // Import database
 const { connectDatabase, prisma } = require('./services/databaseService');
@@ -20,6 +21,8 @@ const { initializeEvents } = require('./models/events');
 const { initializeVideos } = require('./models/videos');
 const { initializeBio } = require('./models/bio');
 const { initializeLyrics } = require('./models/lyrics');
+const { warmCache, getCacheStats } = require('./services/cacheService');
+const dataService = require('./services/dataService');
 
 const app = express();
 
@@ -49,6 +52,7 @@ app.use('/api/admin/bio', bioRoutes);
 app.use('/api/lyrics', lyricsRoutes);
 app.use('/api/admin/lyrics', lyricsRoutes);
 app.use('/api', stripeRoutes);
+app.use('/api/performance', performanceRoutes);
 
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
@@ -58,6 +62,7 @@ app.get('/api/health', async (req, res) => {
             stripe: await checkStripe(),
             memory: process.memoryUsage(),
             uptime: process.uptime(),
+            cache: getCacheStats(), // Add cache performance metrics
             timestamp: new Date().toISOString(),
         };
 
@@ -149,6 +154,11 @@ async function startServer() {
             await initializeBio();
             await initializeLyrics();
             console.log('✅ Database initialization completed');
+
+            // PERFORMANCE: Warm cache with common queries
+            console.log('🔥 Warming performance cache...');
+            await warmCache(dataService);
+            console.log('✅ Cache warming completed');
         } catch (error) {
             console.error('❌ Database initialization failed:', error);
         }
@@ -158,6 +168,7 @@ async function startServer() {
         const server = app.listen(PORT, () => {
             console.log(`🚀 PRODUCTION Server running on port ${PORT}`);
             console.log('💡 Using prepared_statements=false for stability');
+            console.log('⚡ Performance caching active');
             console.log('✅ Ready for production traffic');
         });
 

@@ -18,6 +18,8 @@ model Inventory {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([title], name: "idx_inventory_title")
+  @@index([updatedAt(sort: Desc)], name: "idx_inventory_updated")
   @@map("inventory")
 }
 
@@ -34,6 +36,10 @@ model Event {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([date(sort: Desc)], name: "idx_events_date")
+  @@index([isPast], name: "idx_events_ispast")
+  @@index([isPast, date(sort: Desc)], name: "idx_events_ispast_date")
+  @@index([createdAt(sort: Desc)], name: "idx_events_created")
   @@map("events")
 }
 
@@ -46,6 +52,9 @@ model Video {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([order(sort: Asc)], name: "idx_videos_order")
+  @@index([youtubeId], name: "idx_videos_youtubeid")
+  @@index([createdAt(sort: Desc)], name: "idx_videos_created")
   @@map("videos")
 }
 
@@ -58,6 +67,7 @@ model Bio {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([updatedAt(sort: Desc)], name: "idx_bio_updated")
   @@map("bio")
 }
 
@@ -70,5 +80,8 @@ model Lyrics {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  @@index([order(sort: Asc)], name: "idx_lyrics_order")
+  @@index([isInstrumental], name: "idx_lyrics_instrumental")
+  @@index([createdAt(sort: Desc)], name: "idx_lyrics_created")
   @@map("lyrics")
 }

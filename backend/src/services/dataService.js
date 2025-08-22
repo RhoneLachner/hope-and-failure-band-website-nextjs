@@ -3,81 +3,152 @@ const events = require('../models/events');
 const videos = require('../models/videos');
 const bio = require('../models/bio');
 const lyrics = require('../models/lyrics');
+const {
+    cacheWrapper,
+    generateKey,
+    invalidation,
+    CACHE_TYPES,
+} = require('./cacheService');
 
-// Inventory services
-function getInventory() {
-    return inventory.getInventory();
+// OPTIMIZED INVENTORY SERVICES WITH CACHING
+async function getInventory() {
+    const cacheKey = generateKey('inventory', 'all');
+    return await cacheWrapper(
+        cacheKey,
+        () => inventory.getInventory(),
+        CACHE_TYPES.DYNAMIC
+    );
 }
 
-function updateInventoryItem(productId, size, newQuantity) {
-    return inventory.updateInventory(productId, size, newQuantity);
+async function updateInventoryItem(productId, size, newQuantity) {
+    const result = await inventory.updateInventory(
+        productId,
+        size,
+        newQuantity
+    );
+    // Invalidate inventory cache after updates
+    invalidation.inventory();
+    return result;
 }
 
-function decrementInventoryItem(productId, size, quantity) {
-    return inventory.decrementInventory(productId, size, quantity);
+async function decrementInventoryItem(productId, size, quantity) {
+    const result = await inventory.decrementInventory(
+        productId,
+        size,
+        quantity
+    );
+    // Invalidate inventory cache after updates
+    invalidation.inventory();
+    return result;
 }
 
-// Events services
-function getAllEvents() {
-    return events.getAllEvents();
+// OPTIMIZED EVENTS SERVICES WITH CACHING
+async function getAllEvents() {
+    const cacheKey = generateKey('events', 'all');
+    return await cacheWrapper(
+        cacheKey,
+        () => events.getAllEvents(),
+        CACHE_TYPES.SEMI_STATIC
+    );
 }
 
-function createEvent(eventData) {
-    return events.addEvent(eventData);
+async function createEvent(eventData) {
+    const result = await events.addEvent(eventData);
+    // Invalidate events cache after creation
+    invalidation.events();
+    return result;
 }
 
-function updateEvent(id, eventData) {
-    return events.updateEvent(id, eventData);
+async function updateEvent(id, eventData) {
+    const result = await events.updateEvent(id, eventData);
+    // Invalidate events cache after updates
+    invalidation.events();
+    return result;
 }
 
-function deleteEvent(id) {
-    return events.deleteEvent(id);
+async function deleteEvent(id) {
+    const result = await events.deleteEvent(id);
+    // Invalidate events cache after deletion
+    invalidation.events();
+    return result;
 }
 
-// Videos services
-function getAllVideos() {
-    return videos.getAllVideos();
+// OPTIMIZED VIDEOS SERVICES WITH CACHING
+async function getAllVideos() {
+    const cacheKey = generateKey('videos', 'all');
+    return await cacheWrapper(
+        cacheKey,
+        () => videos.getAllVideos(),
+        CACHE_TYPES.STATIC
+    );
 }
 
-function updateVideo(id, videoData) {
-    return videos.updateVideo(id, videoData);
+async function updateVideo(id, videoData) {
+    const result = await videos.updateVideo(id, videoData);
+    // Invalidate videos cache after updates
+    invalidation.videos();
+    return result;
 }
 
-function createVideo(videoData) {
-    return videos.addVideo(videoData);
+async function createVideo(videoData) {
+    const result = await videos.addVideo(videoData);
+    // Invalidate videos cache after creation
+    invalidation.videos();
+    return result;
 }
 
-function deleteVideo(id) {
-    return videos.deleteVideo(id);
+async function deleteVideo(id) {
+    const result = await videos.deleteVideo(id);
+    // Invalidate videos cache after deletion
+    invalidation.videos();
+    return result;
 }
 
-// Bio services
-function getBio() {
-    return bio.getBio();
+// OPTIMIZED BIO SERVICES WITH CACHING
+async function getBio() {
+    const cacheKey = generateKey('bio', 'main');
+    return await cacheWrapper(cacheKey, () => bio.getBio(), CACHE_TYPES.STATIC);
 }
 
-function updateBio(bioData) {
-    return bio.updateBio(bioData);
+async function updateBio(bioData) {
+    const result = await bio.updateBio(bioData);
+    // Invalidate bio cache after updates
+    invalidation.bio();
+    return result;
 }
 
-// Lyrics services
-function getAllLyrics() {
-    return lyrics.getAllLyrics();
+// OPTIMIZED LYRICS SERVICES WITH CACHING
+async function getAllLyrics() {
+    const cacheKey = generateKey('lyrics', 'all');
+    return await cacheWrapper(
+        cacheKey,
+        () => lyrics.getAllLyrics(),
+        CACHE_TYPES.STATIC
+    );
 }
 
-function createSong(songData) {
-    return lyrics.addSong(songData);
+async function createSong(songData) {
+    const result = await lyrics.addSong(songData);
+    // Invalidate lyrics cache after creation
+    invalidation.lyrics();
+    return result;
 }
 
-function updateSong(id, songData) {
-    return lyrics.updateSong(id, songData);
+async function updateSong(id, songData) {
+    const result = await lyrics.updateSong(id, songData);
+    // Invalidate lyrics cache after updates
+    invalidation.lyrics();
+    return result;
 }
 
-function deleteSong(id) {
-    return lyrics.deleteSong(id);
+async function deleteSong(id) {
+    const result = await lyrics.deleteSong(id);
+    // Invalidate lyrics cache after deletion
+    invalidation.lyrics();
+    return result;
 }
 
-// Validation helpers
+// Validation helpers (unchanged)
 function validateEventData(eventData) {
     return !!(
         eventData.title &&
