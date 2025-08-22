@@ -2,6 +2,8 @@ const express = require('express');
 require('./config/environment'); // Load environment variables
 
 const corsMiddleware = require('./middleware/cors');
+const { apiRateLimit, securityHeaders } = require('./middleware/security');
+const { sanitizeInput } = require('./middleware/validation');
 
 // Import route handlers
 const inventoryRoutes = require('./routes/inventory');
@@ -21,8 +23,18 @@ const { initializeLyrics } = require('./models/lyrics');
 
 const app = express();
 
+// Security headers (apply first)
+app.use(securityHeaders);
+
 // Global middleware
 app.use(corsMiddleware);
+
+// Rate limiting for all API routes
+app.use('/api', apiRateLimit);
+
+// Input sanitization middleware
+app.use(sanitizeInput);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -41,24 +53,59 @@ app.use('/api', stripeRoutes);
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
     try {
-        // Test database connection using the already imported prisma instance
-        await prisma.$queryRaw`SELECT 1`;
-
-        res.json({
-            success: true,
-            message: 'Hope & Failure API is running',
+        const checks = {
+            database: await checkDatabase(),
+            stripe: await checkStripe(),
+            memory: process.memoryUsage(),
+            uptime: process.uptime(),
             timestamp: new Date().toISOString(),
-            database: 'connected',
-        });
+        };
+
+        const allHealthy = Object.values(checks).every((check) =>
+            typeof check === 'object' && check.status
+                ? check.status === 'ok'
+                : true
+        );
+
+        res.status(allHealthy ? 200 : 503).json(checks);
     } catch (error) {
         res.status(503).json({
             success: false,
-            message: 'Database connection failed',
+            message: 'Health check failed',
             timestamp: new Date().toISOString(),
             error: error.message,
         });
     }
 });
+
+// Health check helper functions
+async function checkDatabase() {
+    try {
+        await prisma.$queryRaw`SELECT 1`;
+        return { status: 'ok', message: 'Database connected' };
+    } catch (error) {
+        return {
+            status: 'error',
+            message: 'Database disconnected',
+            error: error.message,
+        };
+    }
+}
+
+async function checkStripe() {
+    try {
+        if (!process.env.STRIPE_SECRET_KEY) {
+            return { status: 'error', message: 'Stripe not configured' };
+        }
+        return { status: 'ok', message: 'Stripe configured' };
+    } catch (error) {
+        return {
+            status: 'error',
+            message: 'Stripe check failed',
+            error: error.message,
+        };
+    }
+}
 
 // 404 handler for API routes
 app.use('/api/*', (req, res) => {

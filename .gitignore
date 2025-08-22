@@ -1,38 +1,4 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Environment variables and secrets
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-*.env
-
-# API keys and configuration
-emailConfig.ts
-stripeConfig.ts
-config/keys.ts
-config/secrets.ts
-
-# Build and cache
-.next/
-.cache/
-.parcel-cache/
-.vite/
-coverage/
-.nyc_output/
+# Root .gitignore - Project-wide patterns
 
 # OS generated files
 .DS_Store
@@ -42,6 +8,36 @@ coverage/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment variables and secrets - NEVER commit these!
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Node modules (global protection)
+node_modules/
+
+# Build and cache directories
+dist/
+dist-ssr/
+build/
+.cache/
+.parcel-cache/
+.vite/
+coverage/
+.nyc_output/
 
 # Editor directories and files
 .vscode/*
@@ -72,12 +68,11 @@ temp/
 # TypeScript cache
 *.tsbuildinfo
 
-
-CODEBASE_ANALYSIS.md
-SECURITY_ACCESSIBILITY_PLAN.md
-TO-DO.md
-STRIPE_TESTING_INSTRUCTIONS.md
-ORDER_EMAIL_SETUP.md
-STRIPE_QUICK_SETUP.md
-ai_analyze_codebase_functionality.md
-node_modules
+# Documentation files (optional - uncomment if you want to hide them)
+# CODEBASE_ANALYSIS.md
+# SECURITY_ACCESSIBILITY_PLAN.md
+# TO-DO.md
+# STRIPE_TESTING_INSTRUCTIONS.md
+# ORDER_EMAIL_SETUP.md
+# STRIPE_QUICK_SETUP.md
+# ai_analyze_codebase_functionality.md

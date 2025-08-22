@@ -6,6 +6,7 @@ const {
     updateEvent,
     deleteEvent,
 } = require('../models/events');
+const { requireAdmin, adminRateLimit } = require('../middleware/auth');
 
 // Get all events
 router.get('/', async (req, res) => {
@@ -23,13 +24,8 @@ router.get('/', async (req, res) => {
 });
 
 // Add new event (admin only)
-router.post('/admin', async (req, res) => {
-    const { password, ...eventData } = req.body;
-
-    // Simple password protection
-    if (password !== 'admin123') {
-        return res.status(401).json({ success: false, error: 'Unauthorized' });
-    }
+router.post('/admin', adminRateLimit, requireAdmin, async (req, res) => {
+    const eventData = req.body; // Password already extracted by requireAdmin
 
     // Validate required fields
     if (
@@ -65,14 +61,9 @@ router.post('/admin', async (req, res) => {
 });
 
 // Update existing event (admin only)
-router.put('/admin/:id', async (req, res) => {
+router.put('/admin/:id', adminRateLimit, requireAdmin, async (req, res) => {
     const { id } = req.params;
-    const { password, ...eventData } = req.body;
-
-    // Simple password protection
-    if (password !== 'admin123') {
-        return res.status(401).json({ success: false, error: 'Unauthorized' });
-    }
+    const eventData = req.body; // Password already extracted by requireAdmin
 
     try {
         const updatedEvent = await updateEvent(id, eventData);
@@ -94,13 +85,8 @@ router.put('/admin/:id', async (req, res) => {
 });
 
 // Delete event (admin only)
-router.delete('/admin/:id', async (req, res) => {
+router.delete('/admin/:id', adminRateLimit, requireAdmin, async (req, res) => {
     const { id } = req.params;
-    const { password } = req.body;
-
-    if (password !== 'admin123') {
-        return res.status(401).json({ success: false, error: 'Unauthorized' });
-    }
 
     try {
         const deletedEvent = await deleteEvent(id);

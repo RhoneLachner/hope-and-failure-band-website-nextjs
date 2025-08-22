@@ -6,6 +6,7 @@ import AdminEvents from '../../components/admin/AdminEvents';
 import AdminVideos from '../../components/admin/AdminVideos';
 import AdminBio from '../../components/admin/AdminBio';
 import AdminLyrics from '../../components/admin/AdminLyrics';
+import { validateAdminPassword, SETUP_INSTRUCTIONS } from '../../config/auth';
 
 export default function AdminPage() {
     const [password, setPassword] = useState('');
@@ -28,11 +29,13 @@ export default function AdminPage() {
     }, [message]);
 
     const authenticate = () => {
-        if (password === 'admin123') {
+        if (validateAdminPassword(password)) {
             setIsAuthenticated(true);
-            setMessage(''); // Clear any error messages on successful login
+            setMessage('✅ Authentication successful');
+            console.log('✅ Admin authenticated successfully');
         } else {
             setMessage('❌ Invalid password');
+            console.warn('❌ Failed admin authentication attempt');
         }
     };
 

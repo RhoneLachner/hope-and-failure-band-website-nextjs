@@ -5,6 +5,7 @@ const {
     updateInventory,
     decrementInventory,
 } = require('../models/inventory');
+const { requireAdmin, adminRateLimit } = require('../middleware/auth');
 
 // Get inventory
 router.get('/', async (req, res) => {
@@ -22,13 +23,8 @@ router.get('/', async (req, res) => {
 });
 
 // Update inventory (admin only)
-router.put('/admin', async (req, res) => {
-    const { password, productId, size, quantity } = req.body;
-
-    // Simple password protection
-    if (password !== 'admin123') {
-        return res.status(401).json({ success: false, error: 'Unauthorized' });
-    }
+router.put('/admin', adminRateLimit, requireAdmin, async (req, res) => {
+    const { productId, size, quantity } = req.body; // Password already extracted by requireAdmin
 
     if (!productId || !size || quantity === undefined) {
         return res.status(400).json({

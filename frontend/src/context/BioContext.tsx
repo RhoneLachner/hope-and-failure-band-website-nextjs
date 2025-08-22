@@ -8,6 +8,7 @@ import React, {
     useCallback,
 } from 'react';
 import type { ReactNode } from 'react';
+import { getAdminPassword } from '../config/auth';
 
 export interface PhotoCredit {
     name: string;
@@ -46,7 +47,7 @@ interface BioProviderProps {
     children: ReactNode;
 }
 
-const ADMIN_PASSWORD = 'admin123'; // Same as other admin functions
+const ADMIN_PASSWORD = getAdminPassword(); // Secure admin password from configuration
 
 export const BioProvider: React.FC<BioProviderProps> = ({ children }) => {
     const [bio, setBio] = useState<Bio | null>(null);

@@ -8,6 +8,7 @@ import React, {
     useCallback,
 } from 'react';
 import type { ReactNode } from 'react';
+import { getAdminPassword } from '../config/auth';
 
 export interface Video {
     id: string;
@@ -42,7 +43,7 @@ interface VideosProviderProps {
     children: ReactNode;
 }
 
-const ADMIN_PASSWORD = 'admin123'; // Same as other admin functions
+const ADMIN_PASSWORD = getAdminPassword(); // Secure admin password from configuration
 
 export const VideosProvider: React.FC<VideosProviderProps> = ({ children }) => {
     const [videos, setVideos] = useState<Video[]>([]);

@@ -6,6 +6,7 @@ const {
     updateVideo,
     deleteVideo,
 } = require('../models/videos');
+const { requireAdmin, adminRateLimit } = require('../middleware/auth');
 
 // Get all videos
 router.get('/', async (req, res) => {
@@ -52,13 +53,8 @@ router.put('/admin/:id', async (req, res) => {
 });
 
 // Add new video (admin only)
-router.post('/admin', async (req, res) => {
-    const { password, ...videoData } = req.body;
-
-    // Simple password protection
-    if (password !== 'admin123') {
-        return res.status(401).json({ success: false, error: 'Unauthorized' });
-    }
+router.post('/admin', adminRateLimit, requireAdmin, async (req, res) => {
+    const videoData = req.body; // Password already extracted by requireAdmin
 
     // Validate required fields
     if (!videoData.youtubeId || !videoData.title) {

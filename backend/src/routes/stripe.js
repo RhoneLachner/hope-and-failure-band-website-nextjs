@@ -89,17 +89,32 @@ router.post('/test-emails', async (req, res) => {
     }
 });
 
-// Stripe webhook handler (for production use)
+// Stripe webhook handler (SECURE with signature verification)
 router.post(
     '/webhook',
     express.raw({ type: 'application/json' }),
     (req, res) => {
         const sig = req.headers['stripe-signature'];
+        const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
         let event;
 
+        // Verify webhook signature for security
         try {
-            // In production, you would verify the webhook signature here
-            event = JSON.parse(req.body);
+            if (!endpointSecret) {
+                console.error('❌ STRIPE_WEBHOOK_SECRET not configured');
+                return res
+                    .status(500)
+                    .send('Webhook endpoint secret not configured');
+            }
+
+            // Verify the webhook signature
+            const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+            event = stripe.webhooks.constructEvent(
+                req.body,
+                sig,
+                endpointSecret
+            );
+            console.log('✅ Webhook signature verified successfully');
         } catch (err) {
             console.error(
                 '❌ Webhook signature verification failed:',
